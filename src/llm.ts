@@ -172,7 +172,6 @@ export class LLMService {
           model: this.model,
           messages: this.store.msgs,
           stream: true,
-          temperature: 0.1,
           tools: Object.entries(tools).map(([_key, tool]) => {
             return tool.manifest;
           }),

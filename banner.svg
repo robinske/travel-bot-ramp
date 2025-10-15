@@ -1,0 +1,20 @@
+<svg width="1440" height="448" viewBox="0 0 1440 448" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc"> <title id="title">Travelbot Banner</title> <desc id="desc">Sunset-to-sea landscape with palm silhouettes and the phrase "seamless travel planning".</desc> <defs> <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1"> <stop offset="0%" stop-color="#FFE08A"/> <stop offset="55%" stop-color="#FF9A5A"/> <stop offset="100%" stop-color="#F25A7E"/> </linearGradient> <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1"> <stop offset="0%" stop-color="#4FC3FF"/> <stop offset="100%" stop-color="#0066CC"/> </linearGradient> <radialGradient id="sunHalo" cx="35%" cy="30%" r="30%"> <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.7"/> <stop offset="60%" stop-color="#FFE08A" stop-opacity="0.8"/> <stop offset="100%" stop-color="#FFE08A" stop-opacity="0"/> </radialGradient> <style> .headline { font: 700 64px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; letter-spacing: 0.2px; } @media (max-width: 900px) { .headline { font-size: 40px; } } </style> <clipPath id="frame"> <rect x="0" y="0" width="1440" height="448" rx="16" ry="16"/> </clipPath> </defs> <g clip-path="url(#frame)"> <!-- Sky --> <rect width="1440" height="448" fill="url(#skyGrad)"/>
+<!-- Sun glow -->
+<circle cx="480" cy="130" r="220" fill="url(#sunHalo)"/>
+
+<!-- Horizon and sea -->
+<g>
+  <rect x="0" y="268" width="1440" height="180" fill="url(#seaGrad)"/>
+  <!-- Waves -->
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="round">
+    <path d="M -40 300 Q 20 288 80 300 T 200 300 T 320 300 T 440 300 T 560 300 T 680 300 T 800 300 T 920 300 T 1040 300 T 1160 300 T 1280 300 T 1400 300 T 1520 300" stroke-opacity="0.75" stroke-width="3"/>
+    <path d="M -40 320 Q 10 310 60 320 T 160 320 T 260 320 T 360 320 T 460 320 T 560 320 T 660 320 T 760 320 T 860 320 T 960 320 T 1060 320 T 1160 320 T 1260 320 T 1360 320 T 1460 320" stroke-opacity="0.55" stroke-width="2.5"/>
+    <path d="M -40 340 Q 0 332 40 340 T 120 340 T 200 340 T 280 340 T 360 340 T 440 340 T 520 340 T 600 340 T 680 340 T 760 340 T 840 340 T 920 340 T 1000 340 T 1080 340 T 1160 340 T 1240 340 T 1320 340 T 1400 340" stroke-opacity="0.4" stroke-width="2"/>
+  </g>
+</g>
+
+<!-- Headline -->
+<g transform="translate(120, 150)">
+  <text class="headline" x="0" y="0" fill="#FFFFFF" font-family="Arial, sans-serif">seamless travel planning</text>
+</g>
+</g> </svg>

@@ -5,6 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
+import path from 'path';
 
 // Local imports
 import { log } from './lib/utils/logger';
@@ -52,6 +53,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 app.use(express.urlencoded({ extended: true })).use(express.json());
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Set up WebSocket route for conversation relay
 setupConversationRelayRoute(app);
