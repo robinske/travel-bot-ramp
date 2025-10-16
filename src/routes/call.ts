@@ -94,6 +94,7 @@ async function handleCallRequest(req: any, res: any) {
     ttsProvider: 'ElevenLabs', // Text-to-Speech provider
     speechModel: 'nova-2-general', // Speech model for transcription
     dtmfDetection: true, // DTMF detection enabled
+    intelligenceService: process.env.TWILIO_CONVERSATIONAL_INTELLIGENCE_SID, // TWILIO_CONVERSATIONAL_INTELLIGENCE_SID
     debug: 'true', // Debugging enabled for troubleshooting (string type)
   };
 
