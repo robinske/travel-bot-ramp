@@ -45,6 +45,7 @@ export class LLMService {
     // Add call context like ramp-agent does
     const callerPhoneNumber = direction.includes('outbound') ? to : from;
     const twilioNumber = direction.includes('outbound') ? from : to;
+    console.log('☎️ twilioNumber:', twilioNumber);
     
     // Store the Twilio number in templateData for tools to use
     if (this.templateData) {

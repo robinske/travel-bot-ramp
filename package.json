@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node dist/src/app.js",
     "dev": "NODE_ENV=development ts-node src/app.ts",
-    "build": "tsc",
-    "heroku-postbuild": "tsc",
+    "build": "tsc && npm run copy-assets",
+    "copy-assets": "mkdir -p dist/src/lib/prompts && cp src/lib/prompts/*.md dist/src/lib/prompts/",
+    "heroku-postbuild": "tsc && npm run copy-assets",
     "test": "echo \"Error: no test specified\" && exit 1",
     "ngrok:install": "npm install -g ngrok",
     "twilio:init": "ts-node scripts/twilioInit/index.ts"

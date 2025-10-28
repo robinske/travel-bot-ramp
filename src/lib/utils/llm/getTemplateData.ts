@@ -3,7 +3,6 @@ import path from 'path';
 import { LocalTemplateData } from '../../types';
 
 export async function getLocalTemplateData(): Promise<LocalTemplateData> {
-  // Look in the src directory, not the dist directory
   const rootDir = path.resolve(__dirname, '../../../../');
   
   let instructions = '';
