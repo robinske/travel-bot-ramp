@@ -7,6 +7,7 @@
     "start": "node dist/app.js",
     "dev": "NODE_ENV=development ts-node src/app.ts",
     "build": "tsc",
+    "heroku-postbuild": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "ngrok:install": "npm install -g ngrok",
     "twilio:init": "ts-node scripts/twilioInit/index.ts"
@@ -27,7 +28,8 @@
     "compression": "^1.7.4",
     "winston": "^3.10.0",
     "@sendgrid/mail": "^8.1.0",
-    "airtable": "^0.12.2"
+    "airtable": "^0.12.2",
+    "typescript": "^5.1.6"
   },
   "devDependencies": {
     "@types/node": "^20.5.0",
@@ -38,7 +40,6 @@
     "@types/cors": "^2.8.14",
     "@types/morgan": "^1.9.5",
     "@types/compression": "^1.7.3",
-    "typescript": "^5.1.6",
     "ts-node": "^10.9.1"
   },
   "keywords": [
