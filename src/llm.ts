@@ -300,6 +300,12 @@ export class LLMService {
                 return;
               }
 
+              // Handle SMS sending - end conversation turn after sending
+              if (currentToolName === 'sendText') {
+                this.currentRequest = null;
+                return;
+              }
+
               // Handle language switching
               if (currentToolName === 'switchLanguage') {
                 this.emit('language', result.data);

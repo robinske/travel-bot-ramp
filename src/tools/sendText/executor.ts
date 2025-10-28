@@ -30,10 +30,10 @@ export async function execute(
     
     // Use the Twilio number from the conversation context as the "from" number for SMS
     // This should be passed in the toolData from the conversation context
-    const fromNumber = toolData?.twilioNumber;
+    const fromNumber = toolData?.twilioPhoneNumber;
     
     if (!fromNumber) {
-      throw new Error('Missing Twilio number in toolData. This should be set from the conversation context.');
+      throw new Error(`Missing Twilio number in toolData. This should be set from the conversation context.`);
     }
     
     const client = new Twilio(twilioAccountSid, twilioAuthToken);
