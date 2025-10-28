@@ -2,9 +2,9 @@
   "name": "transform-travel-bot",
   "version": "1.0.0",
   "description": "A Twilio ConversationRelay agent created with create-twilio-agent",
-  "main": "dist/app.js",
+  "main": "dist/src/app.js",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "dev": "NODE_ENV=development ts-node src/app.ts",
     "build": "tsc",
     "heroku-postbuild": "tsc",
