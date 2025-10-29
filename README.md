@@ -1,17 +1,18 @@
 # transform-travel-bot
 
-A Twilio ConversationRelay voice agent created with create-twilio-agent.
+A Twilio ConversationRelay voice agent created with [create-twilio-agent](github.com/twilio-demos/twilio-agent-create-app).
 
 ## Features
 
 This voice agent includes the following tools:
-- send text\n- send r c s\n- send email\n- get segment profile\n- get segment events\n- update segment profile\n- post segment track\n- get airtable data\n- upsert airtable data\n- send to live agent\n- switch language
+- Send text messages (SMS)
+- Send email via SendGrid
+- Switch conversation language
 
 ## Architecture
 
 - **TypeScript**: Full TypeScript support with proper types
 - **ConversationRelay**: Advanced voice call handling
-- **Local Configuration**: No external dependencies like Algolia - uses local files
 - **Streaming LLM**: Real-time response streaming with abort controllers
 - **Tool System**: Modular tool architecture with individual executors
 - **WebSocket Support**: Real-time communication
