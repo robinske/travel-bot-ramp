@@ -6,7 +6,6 @@ import { Router } from 'express';
  import { activeConversations } from './conversationRelay';
  import { LLMService } from '../llm';
  import { routeNames } from './routeNames';
- import { trackMessage } from '../lib/utils/trackMessage';
  
  const router = Router();
 
@@ -26,16 +25,6 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
     }
 
     console.log('Received SMS from ' + from + ': ' + body);
- 
-    // Track inbound message
-    await trackMessage({
-      userId: from,
-      callType: 'sms',
-      phoneNumber: from,
-      label: 'sms',
-      direction: 'inbound',
-      event: 'Text Interaction',
-    });
 
     // Check if there's an active conversation for this number
     const conversation = activeConversations.get(from);
@@ -80,16 +69,6 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
       });
 
       await llm.run();
- 
-      // Track the start of the text conversation (only for new conversations)
-      await trackMessage({
-        userId: from,
-        callType: 'sms',
-        phoneNumber: from,
-        label: 'sms',
-        direction: 'inbound',
-        event: 'Conversation Started',
-      });
     }
 
     // Send TwiML response

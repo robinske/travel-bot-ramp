@@ -3,312 +3,497 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transform Travel Bot - Test Interface</title>
+    <title>ConversationRelay WebSocket Tester</title>
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
         }
 
         .container {
+            max-width: 900px;
+            margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-
-        .card {
-            background: #f8f9fa;
             border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
 
-        .card h2 {
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 15px;
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 20px 30px;
+            border-bottom: 3px solid #764ba2;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            margin-top: 5px;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .status {
             display: flex;
             align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
 
-        .card h2::before {
-            content: "📞";
-            margin-right: 10px;
-            font-size: 24px;
+        .status.disconnected {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .status.connected {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status.disconnected .status-dot {
+            background: #c33;
+        }
+
+        .status.connected .status-dot {
+            background: #3c3;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            color: #555;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 8px;
-            font-size: 14px;
+            color: #333;
         }
 
-        input[type="tel"] {
+        input, textarea {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
         }
 
-        input[type="tel"]:focus {
+        input:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
 
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
         button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
         }
 
         button:disabled {
-            background: #ccc;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .status {
-            margin-top: 20px;
-            padding: 15px;
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #7f8c8d;
+        }
+
+        .messages {
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
-            display: none;
-        }
-
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .info-section {
-            background: #e8f4f8;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
             margin-bottom: 20px;
         }
 
-        .info-section h3 {
-            color: #333;
-            font-size: 16px;
+        .message {
+            padding: 10px 15px;
             margin-bottom: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.5;
         }
 
-        .info-section p {
+        .message.system {
+            background: #e3f2fd;
+            border-left: 3px solid #2196f3;
+        }
+
+        .message.sent {
+            background: #f3e5f5;
+            border-left: 3px solid #9c27b0;
+        }
+
+        .message.received {
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+        }
+
+        .message.error {
+            background: #ffebee;
+            border-left: 3px solid #f44336;
+        }
+
+        .message-type {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .message-content {
             color: #555;
-            font-size: 14px;
-            line-height: 1.6;
+            word-wrap: break-word;
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-box {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #666;
+        .message-time {
+            font-size: 11px;
+            color: #999;
             margin-top: 5px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-action {
+            padding: 12px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .quick-action-desc {
+            font-size: 12px;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌍 Transform Travel Bot</h1>
-        <p class="subtitle">Test your AI travel planning assistant</p>
-
-        <div class="info-section">
-            <h3>How it works</h3>
-            <p>Enter a phone number below to receive a call from the AI travel assistant. The bot can help with travel planning, recommendations, and bookings using natural conversation.</p>
+        <div class="header">
+            <h1><� ConversationRelay WebSocket Tester</h1>
+            <p>Test your Twilio voice agent without making phone calls</p>
         </div>
 
-        <div class="card">
-            <h2>Make a Test Call</h2>
-            <form id="callForm">
-                <div class="form-group">
-                    <label for="phoneNumber">Phone Number</label>
-                    <input
-                        type="tel"
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        placeholder="+1234567890"
-                        pattern="^\+?[1-9]\d{1,14}$"
-                        required
-                    >
-                    <small style="color: #888; font-size: 12px; display: block; margin-top: 5px;">
-                        Use E.164 format (e.g., +12025551234)
-                    </small>
+        <div class="content">
+            <div id="status" class="status disconnected">
+                <div class="status-dot"></div>
+                <span>Disconnected</span>
+            </div>
+
+            <div class="form-group">
+                <label for="wsUrl">WebSocket URL</label>
+                <input type="text" id="wsUrl" placeholder="Leave empty for default (ws://localhost:3000/conversation-relay)">
+            </div>
+
+            <div class="button-group">
+                <button id="connectBtn" class="btn-primary">Connect</button>
+                <button id="disconnectBtn" class="btn-danger" disabled>Disconnect</button>
+                <button id="clearBtn" class="btn-secondary">Clear Messages</button>
+            </div>
+
+            <div class="quick-actions">
+                <div class="quick-action" onclick="sendQuickMessage('Hello, I need help planning a trip')">
+                    <div class="quick-action-title">Start Conversation</div>
+                    <div class="quick-action-desc">Begin planning a trip</div>
                 </div>
+                <div class="quick-action" onclick="sendQuickMessage('Yes, that sounds great')">
+                    <div class="quick-action-title">Confirm</div>
+                    <div class="quick-action-desc">Accept the plan</div>
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('Can you text me the details?')">
+                    <div class="quick-action-title">Request Text</div>
+                    <div class="quick-action-desc">Ask for text summary</div>
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('Can you email me that?')">
+                    <div class="quick-action-title">Request Email</div>
+                    <div class="quick-action-desc">Ask for email summary</div>
+                </div>
+            </div>
 
-                <button type="submit" id="callButton">
-                    📞 Call Me Now
-                </button>
-            </form>
+            <div class="messages" id="messages"></div>
 
-            <div id="status" class="status"></div>
-        </div>
+            <div class="form-group">
+                <label for="messageInput">Send Message</label>
+                <textarea id="messageInput" placeholder="Type a message to send to the agent..."></textarea>
+            </div>
 
-        <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
-            <h2 style="font-size: 16px;">💡 Testing Tips</h2>
-            <ul style="margin-left: 20px; color: #555; line-height: 1.8; font-size: 14px;">
-                <li>Make sure your Twilio credentials are configured</li>
-                <li>Ensure ngrok or live host URL is set up</li>
-                <li>The bot will call you within a few seconds</li>
-                <li>Try asking about travel destinations, bookings, or recommendations</li>
-            </ul>
+            <button id="sendBtn" class="btn-primary" disabled>Send Message</button>
         </div>
     </div>
 
     <script>
-        const form = document.getElementById('callForm');
-        const button = document.getElementById('callButton');
-        const status = document.getElementById('status');
-        const phoneInput = document.getElementById('phoneNumber');
+        let ws = null;
+        let isConnected = false;
+        let currentAgentMessage = ''; // Buffer for accumulating agent messages
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        const wsUrlInput = document.getElementById('wsUrl');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const messageInput = document.getElementById('messageInput');
+        const messagesDiv = document.getElementById('messages');
+        const statusDiv = document.getElementById('status');
 
-            const phoneNumber = phoneInput.value.trim();
+        function updateStatus(connected) {
+            isConnected = connected;
+            statusDiv.className = `status ${connected ? 'connected' : 'disconnected'}`;
+            statusDiv.querySelector('span').textContent = connected ? 'Connected' : 'Disconnected';
 
-            // Basic validation
-            if (!phoneNumber.match(/^\+?[1-9]\d{1,14}$/)) {
-                showStatus('Please enter a valid phone number in E.164 format (e.g., +12025551234)', 'error');
+            connectBtn.disabled = connected;
+            disconnectBtn.disabled = !connected;
+            sendBtn.disabled = !connected;
+        }
+
+        function addMessage(type, content, data = null) {
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${type}`;
+
+            const typeLabel = {
+                system: '� System',
+                sent: '=� Sent',
+                received: '=� Received',
+                error: 'L Error'
+            }[type] || type;
+
+            const time = new Date().toLocaleTimeString();
+
+            messageEl.innerHTML = `
+                <div class="message-type">${typeLabel}</div>
+                <div class="message-content">${content}</div>
+                ${data ? `<pre class="message-content" style="margin-top: 8px; font-size: 11px; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 4px; overflow-x: auto;">${JSON.stringify(data, null, 2)}</pre>` : ''}
+                <div class="message-time">${time}</div>
+            `;
+
+            messagesDiv.appendChild(messageEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function connect() {
+            // Use default URL if input is empty
+            let url = wsUrlInput.value.trim();
+            if (!url) {
+                // Determine the WebSocket URL based on current location
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const host = window.location.host || 'localhost:3000';
+                url = `${protocol}//${host}/conversation-relay`;
+            }
+
+            addMessage('system', `Connecting to ${url}...`);
+
+            ws = new WebSocket(url);
+
+            ws.onopen = () => {
+                addMessage('system', 'WebSocket connected! Sending setup message...');
+                updateStatus(true);
+
+                // Send setup message to initialize the conversation
+                const setupMessage = {
+                    type: 'setup',
+                    from: '+15555551234',
+                    to: '+15555559999',
+                    direction: 'inbound',
+                    callSid: 'TEST_' + Date.now()
+                };
+
+                ws.send(JSON.stringify(setupMessage));
+                addMessage('sent', 'Setup message sent', setupMessage);
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    if (data.type === 'text') {
+                        // Accumulate tokens until we get the final message
+                        currentAgentMessage += data.token;
+
+                        // When last is true, display the complete message
+                        if (data.last === true) {
+                            if (currentAgentMessage.trim()) {
+                                addMessage('received', `Agent: ${currentAgentMessage}`, data);
+                            }
+                            currentAgentMessage = ''; // Reset buffer
+                        }
+                    } else if (data.type === 'end') {
+                        addMessage('received', 'Conversation ended', data);
+                    } else if (data.type === 'language') {
+                        addMessage('received', 'Language changed', data);
+                    } else {
+                        addMessage('received', `Message type: ${data.type}`, data);
+                    }
+                } catch (error) {
+                    addMessage('error', 'Failed to parse message: ' + error.message);
+                }
+            };
+
+            ws.onerror = (error) => {
+                addMessage('error', 'WebSocket error occurred');
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                addMessage('system', 'WebSocket disconnected');
+                updateStatus(false);
+                ws = null;
+            };
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+                updateStatus(false);
+            }
+        }
+
+        function sendMessage() {
+            if (!ws || !isConnected) {
+                addMessage('error', 'Not connected to WebSocket');
                 return;
             }
 
-            // Disable button and show loading state
-            button.disabled = true;
-            button.textContent = '📞 Calling...';
-            showStatus('Initiating call...', 'info');
+            const message = messageInput.value.trim();
+            if (!message) {
+                addMessage('error', 'Message cannot be empty');
+                return;
+            }
 
-            try {
-                const response = await fetch('/outbound-call', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ to: phoneNumber })
-                });
+            const messageData = {
+                type: 'prompt',
+                voicePrompt: message
+            };
 
-                const data = await response.json();
+            ws.send(JSON.stringify(messageData));
+            addMessage('sent', `You: ${message}`, messageData);
+            messageInput.value = '';
+        }
 
-                if (response.ok) {
-                    showStatus(`✅ Call initiated successfully! You should receive a call shortly. Call SID: ${data.callSid || 'N/A'}`, 'success');
-                    phoneInput.value = '';
-                } else {
-                    showStatus(`❌ Error: ${data.error || data.message || 'Failed to initiate call'}`, 'error');
-                }
-            } catch (error) {
-                showStatus(`❌ Network error: ${error.message}`, 'error');
-            } finally {
-                button.disabled = false;
-                button.textContent = '📞 Call Me Now';
+        function sendQuickMessage(message) {
+            if (!isConnected) {
+                addMessage('error', 'Not connected. Please connect first.');
+                return;
+            }
+
+            messageInput.value = message;
+            sendMessage();
+        }
+
+        function clearMessages() {
+            messagesDiv.innerHTML = '';
+        }
+
+        // Event listeners
+        connectBtn.addEventListener('click', connect);
+        disconnectBtn.addEventListener('click', disconnect);
+        clearBtn.addEventListener('click', clearMessages);
+        sendBtn.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
         });
 
-        function showStatus(message, type) {
-            status.textContent = message;
-            status.className = `status ${type}`;
-            status.style.display = 'block';
-
-            // Auto-hide success messages after 5 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    status.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        // Load system stats on page load
-        async function loadStats() {
-            try {
-                const response = await fetch('/health');
-                if (response.ok) {
-                    console.log('✅ Server is healthy');
-                }
-            } catch (error) {
-                console.error('❌ Server health check failed:', error);
-            }
-        }
-
-        loadStats();
+        // Initialize
+        addMessage('system', 'Ready to connect. Click "Connect" to start testing.');
     </script>
 </body>
 </html>

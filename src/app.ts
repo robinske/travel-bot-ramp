@@ -19,7 +19,17 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const { app } = ExpressWs(express());
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "ws:", "wss:"],
+    },
+  },
+}));
 app.use(compression());
 app.use(morgan('combined'));
 
@@ -50,7 +60,13 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(express.urlencoded({ extended: true })).use(express.json());
 
 // Serve static files from public directory
-app.use(express.static(path.join(__dirname, '../public')));
+// In dev mode: __dirname is src, so ../public
+// In production: __dirname is dist/src, so ../../public
+const publicPath = process.env.NODE_ENV === 'development'
+  ? path.join(__dirname, '../public')
+  : path.join(__dirname, '../../public');
+console.log('Serving static files from:', publicPath);
+app.use(express.static(publicPath));
 
 // Set up WebSocket route for conversation relay
 setupConversationRelayRoute(app);
