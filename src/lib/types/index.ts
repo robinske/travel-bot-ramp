@@ -36,10 +36,6 @@ export interface LocalTemplateData {
     twilioAccountSid?: string;
     twilioAuthToken?: string;
     twilioPhoneNumber?: string;
-    segmentWriteKey?: string;
-    segmentWorkspace?: string;
-    airtableApiKey?: string;
-    airtableBaseId?: string;
     emailApiKey?: string;
     emailFromAddress?: string;
     [key: string]: any;

@@ -35,37 +35,6 @@ async function handleCallRequest(req: any, res: any) {
     console.log('Inbound call detected. Using "From" number as caller: ' + callerNumber);
   }
 
-  // Track the start of the call conversation
-  if (process.env.SEGMENT_WRITE_KEY) {
-    try {
-      await axios.post(
-        'https://api.segment.io/v1/track',
-        {
-          userId: callerNumber,
-          event: 'Conversation Started',
-          properties: {
-            type: 'voice',
-            phoneNumber: callerNumber,
-            direction: direction || 'inbound',
-            timestamp: new Date().toISOString(),
-          },
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Basic ' + Buffer.from((process.env.SEGMENT_WRITE_KEY || '') + ':').toString('base64'),
-          },
-        }
-      );
-    } catch (trackError) {
-      log.error({
-        label: 'call',
-        message: 'Failed to track call conversation start',
-        data: trackError,
-      });
-    }
-  }
-
   // action endpoint will be executed when action is dispatched to the ConversationRelay websocket
   const baseActionUrl = isProduction
     ? 'https://' + process.env.LIVE_HOST_URL + '/live-agent'

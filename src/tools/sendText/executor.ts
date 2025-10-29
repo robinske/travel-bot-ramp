@@ -1,6 +1,5 @@
 import { Twilio } from 'twilio';
- import { ToolResult, LocalTemplateData } from '../../lib/types';
- import { trackMessage } from '../../lib/utils/trackMessage';
+import { ToolResult, LocalTemplateData } from '../../lib/types';
 
 export async function execute(
   args: { to: string; message: string },
@@ -44,18 +43,6 @@ export async function execute(
       from: fromNumber
     });
     
-    // Track outbound message
-    const callType = to.includes('whatsapp:') || (fromNumber && fromNumber.includes('whatsapp:')) ? 'whatsapp' : 'sms';
-    trackMessage({
-      userId: to,
-      callType,
-      phoneNumber: to,
-      label: 'outboundMessage',
-      direction: 'outbound',
-      event: 'Text Interaction',
-      messageSid: result.sid,
-    });
-
     return {
       success: true,
       data: {

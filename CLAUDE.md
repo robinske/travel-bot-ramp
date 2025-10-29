@@ -24,7 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - `OPENAI_API_KEY`
    - `SERVICE_NAME`
    - `NGROK_URL` or `LIVE_HOST_URL` (for webhook URLs)
-   - Optional service credentials for Segment, Airtable, SendGrid, etc.
+   - Optional service credentials for Airtable, SendGrid, etc.
 
 ## Architecture
 
@@ -79,10 +79,6 @@ The agent supports multiple tools that extend its capabilities:
    - `sendEmail`: Send emails via SendGrid
 
 2. **Integration Tools**:
-   - `getSegmentProfile`: Retrieve customer profiles from Segment
-   - `getSegmentEvents`: Get customer events from Segment
-   - `updateSegmentProfile`: Update customer profiles in Segment
-   - `postSegmentTrack`: Send tracking events to Segment
    - `getAirtableData`: Fetch data from Airtable
    - `upsertAirtableData`: Create or update Airtable records
 

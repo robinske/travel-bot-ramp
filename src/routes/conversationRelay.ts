@@ -116,21 +116,6 @@ export const setupConversationRelayRoute = (app: ExpressWs.Application) => {
             });
           });
 
-          llm.on('handoff', (data: any) => {
-            // Get the stored conversation to access targetWorker
-            const conversation = activeConversations.get(phoneNumber);
-            const enhancedData = {
-              ...data,
-              targetWorker: conversation?.targetWorker || process.env.TWILIO_FLEX_WORKER_SID || undefined,
-            };
-            
-            console.log('🔄 Initiating live agent handoff:', enhancedData);
-            console.log('📞 Call status: Transferring to live agent');
-            
-            // Use wss.end() like ramp-agent (triggers Connect verb)
-            wss.end(enhancedData);
-          });
-
           llm.on('language', (data: any) => {
             const languageMessage = {
               type: 'language' as const,

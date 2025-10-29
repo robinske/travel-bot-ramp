@@ -12,12 +12,7 @@ import { log } from './lib/utils/logger';
 import { setupConversationRelayRoute } from './routes/conversationRelay';
 import callRouter from './routes/call';
 import smsRouter from './routes/sms';
-import liveAgentRouter from './routes/liveAgent';
-import outboundCallRouter from './routes/outboundCall';
 import statsRouter from './routes/stats';
-import activeNumbersRouter from './routes/activeNumbers';
-import outboundMessageRouter from './routes/outboundMessage';
-import liveNumbersRouter from './routes/liveNumbers';
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
@@ -63,12 +58,7 @@ setupConversationRelayRoute(app);
 // Set up HTTP routes
 app.use('/', callRouter);
 app.use('/', smsRouter);
-app.use('/', liveAgentRouter);
-app.use('/', outboundCallRouter);
 app.use('/', statsRouter);
-app.use('/', activeNumbersRouter);
-app.use('/', outboundMessageRouter);
-app.use('/', liveNumbersRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
