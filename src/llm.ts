@@ -60,7 +60,8 @@ export class LLMService {
   }
 
   public async notifyInitialCallParams() {
-    await sendToWebhook(
+    // Send webhook in background - don't await (non-blocking)
+    sendToWebhook(
       {
         sender: 'begin',
         type: 'string',
@@ -69,7 +70,7 @@ export class LLMService {
       },
       this.templateData?.webhookUrl
     ).catch((err: Error) => console.error('Failed to send to webhook:', err));
-    
+
     this.addMessage({
       role: 'system',
       content: `The customer's phone number is ${this.customerNumber}.`,
@@ -80,7 +81,7 @@ export class LLMService {
       console.log('📝 Adding instructions to LLM memory:');
       console.log('- Instructions length:', this.templateData.instructions.length, 'characters');
       console.log('- Instructions preview:', this.templateData.instructions.substring(0, 200) + '...');
-      
+
       this.addMessage({
         role: 'system',
         content: this.templateData.instructions,
@@ -94,7 +95,7 @@ export class LLMService {
       console.log('📋 Adding context to LLM memory:');
       console.log('- Context length:', this.templateData.context.length, 'characters');
       console.log('- Context preview:', this.templateData.context.substring(0, 200) + '...');
-      
+
       this.addMessage({
         role: 'system',
         content: this.templateData.context,
@@ -225,8 +226,8 @@ export class LLMService {
               },
             });
 
-            // Send tool execution to webhook
-            await sendToWebhook(
+            // Send tool execution to webhook (non-blocking)
+            sendToWebhook(
               {
                 sender: 'system:tool',
                 type: 'string',
@@ -249,7 +250,7 @@ export class LLMService {
               toolData: this.templateData?.toolData || {},
               webhookUrl: this.templateData?.webhookUrl,
             });
-            
+
             // Log tool result
             log.tool_result({
               phone: this.customerNumber,
@@ -263,8 +264,8 @@ export class LLMService {
               },
             });
 
-            // Send tool result to webhook
-            await sendToWebhook(
+            // Send tool result to webhook (non-blocking)
+            sendToWebhook(
               {
                 sender: 'system:tool',
                 type: 'string',
