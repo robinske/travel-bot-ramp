@@ -2,12 +2,15 @@ import fs from 'fs-extra';
 import path from 'path';
 import { LocalTemplateData } from '../../types';
 
-export async function getLocalTemplateData(): Promise<LocalTemplateData> {
+// Cache for template data to avoid repeated file I/O
+let cachedTemplateData: LocalTemplateData | null = null;
+
+async function loadTemplateDataFromDisk(): Promise<LocalTemplateData> {
   const rootDir = path.resolve(__dirname, '../../../../');
-  
+
   let instructions = '';
   let context = '';
-  
+
   try {
     const instructionsPath = path.join(rootDir, 'src/lib/prompts/instructions.md');
     console.log('Looking for instructions at:', instructionsPath);
@@ -22,7 +25,7 @@ export async function getLocalTemplateData(): Promise<LocalTemplateData> {
   } catch (error) {
     console.warn('Could not read instructions.md:', error);
   }
-  
+
   try {
     const contextPath = path.join(rootDir, 'src/lib/prompts/context.md');
     console.log('Looking for context at:', contextPath);
@@ -37,7 +40,7 @@ export async function getLocalTemplateData(): Promise<LocalTemplateData> {
   } catch (error) {
     console.warn('Could not read context.md:', error);
   }
-  
+
   const result = {
     instructions,
     context,
@@ -61,4 +64,31 @@ export async function getLocalTemplateData(): Promise<LocalTemplateData> {
   console.log('- Context length:', context.length, 'characters');
 
   return result;
+}
+
+/**
+ * Preload template data at server startup to avoid latency on first call
+ */
+export async function preloadTemplateData(): Promise<void> {
+  console.log('🚀 Preloading template data...');
+  const startTime = Date.now();
+  cachedTemplateData = await loadTemplateDataFromDisk();
+  const loadTime = Date.now() - startTime;
+  console.log(`✅ Template data preloaded in ${loadTime}ms`);
+}
+
+/**
+ * Get template data (returns cached version if available)
+ */
+export async function getLocalTemplateData(): Promise<LocalTemplateData> {
+  // Return cached data if available
+  if (cachedTemplateData) {
+    console.log('📦 Returning cached template data');
+    return cachedTemplateData;
+  }
+
+  // Otherwise load from disk and cache
+  console.log('⚠️ Cache miss - loading template data from disk');
+  cachedTemplateData = await loadTemplateDataFromDisk();
+  return cachedTemplateData;
 }

@@ -13,6 +13,7 @@ import { setupConversationRelayRoute } from './routes/conversationRelay';
 import callRouter from './routes/call';
 import smsRouter from './routes/sms';
 import statsRouter from './routes/stats';
+import { preloadTemplateData } from './lib/utils/llm/getTemplateData';
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
@@ -81,9 +82,23 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.listen(PORT, () => {
-  log.info({
-    label: 'server',
-    message: `Server listening on port ${PORT}`,
+// Preload template data before starting server
+preloadTemplateData()
+  .then(() => {
+    app.listen(PORT, () => {
+      log.info({
+        label: 'server',
+        message: `Server listening on port ${PORT}`,
+      });
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to preload template data:', error);
+    // Start server anyway with fallback behavior
+    app.listen(PORT, () => {
+      log.info({
+        label: 'server',
+        message: `Server listening on port ${PORT} (template data preload failed)`,
+      });
+    });
   });
-});
