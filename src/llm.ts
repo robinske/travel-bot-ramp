@@ -287,13 +287,6 @@ export class LLMService {
             );
 
             if (result.success) {
-              this.addMessage({
-                role: 'system',
-                content: `Tool call ${currentToolName} succeeded with data: ${JSON.stringify(
-                  result.data
-                )}`,
-              });
-
               // Handle live agent handoff
               if (currentToolName === 'sendToLiveAgent') {
                 this.emit('handoff', result.data);
@@ -301,15 +294,29 @@ export class LLMService {
                 return;
               }
 
-              // Handle SMS sending - end conversation turn after sending
-              if (currentToolName === 'sendText') {
-                this.currentRequest = null;
-                return;
-              }
-
               // Handle language switching
               if (currentToolName === 'switchLanguage') {
                 this.emit('language', result.data);
+              }
+
+              // Add success message with specific acknowledgment prompt
+              if (currentToolName === 'sendText') {
+                this.addMessage({
+                  role: 'system',
+                  content: `Tool call sendText succeeded. The text message was sent successfully. Now verbally acknowledge this to the user by saying something like "I just sent that to your phone" or similar, then continue the conversation naturally.`,
+                });
+              } else if (currentToolName === 'sendEmail') {
+                this.addMessage({
+                  role: 'system',
+                  content: `Tool call sendEmail succeeded. The email was sent successfully. Now verbally acknowledge this to the user by saying something like "I've sent that email" or similar, then continue the conversation naturally.`,
+                });
+              } else {
+                this.addMessage({
+                  role: 'system',
+                  content: `Tool call ${currentToolName} succeeded with data: ${JSON.stringify(
+                    result.data
+                  )}`,
+                });
               }
             } else {
               this.addMessage({
@@ -323,12 +330,7 @@ export class LLMService {
             currentToolName = '';
             toolCallInProgress = false;
 
-            // Add a prompt to continue the conversation
-            this.addMessage({
-              role: 'system',
-              content:
-                'Please continue the conversation based on the gathered information.',
-            });
+            // Don't add generic "continue" prompt - let the LLM naturally continue based on the tool result
           } catch (e) {
             // JSON parsing failed - continue buffering
             continue;

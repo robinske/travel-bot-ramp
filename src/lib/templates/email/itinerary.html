@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Hawaii Itinerary</title>
+</head>
+<body style="margin: 0; padding: 20px; font-family: Arial, Helvetica, sans-serif; background-color: #f5f5f5; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+        <!-- Header -->
+        <div style="background-color: #0066cc; color: white; padding: 32px; text-align: center;">
+            <h1 style="margin: 0; font-size: 32px;">🌺 OwlTravel</h1>
+            <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">Your AI Travel Concierge</p>
+        </div>
+
+        <!-- Content -->
+        <div style="padding: 32px;">
+            <h2 style="color: #0066cc; margin-top: 0;">Aloha!</h2>
+            <p style="line-height: 1.6; margin: 16px 0;">Thank you for chatting with us! Here's your personalized Hawaii itinerary.</p>
+
+            <!-- Demo Notice -->
+            <div style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 16px; margin: 24px 0; border-radius: 4px;">
+                <strong>📱 Demo Notice:</strong> This is a sample itinerary created by our AI voice assistant. These are example recommendations, not actual bookings.
+            </div>
+
+            <!-- Itinerary Content -->
+            <div style="margin: 24px 0;">
+                <p style="line-height: 1.8; margin: 8px 0;"><strong>{{message}}</strong></p>
+            </div>
+
+            <!-- Call to Action -->
+            <div style="background-color: #fff8e1; border-left: 4px solid #ffa726; padding: 16px; margin: 24px 0; border-radius: 4px;">
+                <strong>Questions or need adjustments?</strong><br>
+                Feel free to call us back anytime!
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #f5f5f5; padding: 24px; text-align: center; border-top: 1px solid #e0e0e0;">
+            <p style="margin: 0 0 8px 0; color: #666; font-size: 14px;"><strong>OwlTravel AI Assistant</strong></p>
+            <p style="margin: 0 0 16px 0; color: #666; font-size: 12px;">Powered by Twilio ConversationRelay</p>
+            <p style="margin: 0; font-size: 12px;">
+                <a href="https://github.com/twilio-demos/twilio-agent-create-app" style="color: #0066cc; text-decoration: none;">
+                    Learn how this demo was built →
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
