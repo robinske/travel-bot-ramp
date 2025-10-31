@@ -8,19 +8,6 @@ export type SendEmailParams = {
   contentVariables?: Record<string, string>;
 };
 
-// Helper function to escape HTML entities for SendGrid Handlebars templates
-function escapeHtml(text: string): string {
-  const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#x27;',
-    '/': '&#x2F;',
-  };
-  return text.replace(/[&<>"'/]/g, (char) => map[char]);
-}
-
 function getToolEnvData(toolData: LocalTemplateData['toolData']) {
   const {
     sendGridApiKey: sendGridApiKeyEnv,
@@ -80,9 +67,8 @@ export async function execute(
       !to.includes('@twilio.com') &&
       !to.includes('@segment.com')
     ) {
-      // Escape content for SendGrid Handlebars templates
+      // Pass content directly to SendGrid template without escaping
       const rawContent = contentVariables?.content || content || '';
-      const escapedContent = escapeHtml(rawContent);
 
       msg = {
         to: to!,
@@ -90,7 +76,7 @@ export async function execute(
         templateId: sendGridTemplateId!,
         dynamicTemplateData: {
           ...contentVariables,
-          content: escapedContent,
+          content: rawContent,
           subject,
         },
       };
@@ -112,7 +98,6 @@ export async function execute(
   } catch (err) {
     let errorMessage = 'Failed to send email';
     console.error("________________________________");
-    console.error(content)
     console.error('Error in sendEmail executor:', JSON.stringify(err));
     console.error("________________________________");
     errorMessage =

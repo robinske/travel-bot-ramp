@@ -57,9 +57,7 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
 
       llm.addMessage({
         role: 'system',
-        content: `The customer's phone number is ${from}. 
-        The agent's phone number is ${to}.
-        This is an ${callType} conversation.`,
+        content: `The customer's phone number is ${from}. The agent's phone number is ${to}. This is an ${callType} text message conversation. You are communicating via text messages - your responses will be sent as SMS/text. Keep responses concise and text-message appropriate. Try to keep responses under 150 characters when possible. You can use formatting, links, and emojis in text messages.`,
       });
 
       // Add user's message and start conversation

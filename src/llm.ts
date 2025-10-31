@@ -46,16 +46,16 @@ export class LLMService {
     const callerPhoneNumber = direction.includes('outbound') ? to : from;
     const twilioNumber = direction.includes('outbound') ? from : to;
     console.log('☎️ twilioNumber:', twilioNumber);
-    
+
     // Store the Twilio number in templateData for tools to use
     if (this.templateData) {
       this.templateData.toolData = this.templateData.toolData || {};
       this.templateData.toolData.twilioNumber = twilioNumber;
     }
-    
+
     this.addMessage({
       role: 'system',
-      content: `The customer's phone number is ${callerPhoneNumber} and the Twilio number you are calling from is ${twilioNumber}. Your call SID is ${callSid}. This is a ${direction} call.`,
+      content: `The customer's phone number is ${callerPhoneNumber} and the Twilio number you are calling from is ${twilioNumber}. Your call SID is ${callSid}. This is a ${direction} voice call. You are speaking with the customer over the phone - your responses will be read aloud by text-to-speech.`,
     });
   }
 
@@ -115,13 +115,18 @@ export class LLMService {
   removeAllListeners: (typeof this.emitter)['removeAllListeners'] = (...args: any[]) =>
     this.emitter.removeAllListeners(...(args as [any?]));
 
-  // Voice call state management
+  // Communication channel state management
   get isVoiceCall(): boolean {
     return this._isVoiceCall;
   }
 
   set isVoiceCall(value: boolean) {
     this._isVoiceCall = value;
+  }
+
+  // Helper to get communication type for tools
+  get communicationType(): 'voice' | 'sms' {
+    return this._isVoiceCall ? 'voice' : 'sms';
   }
 
   // Add message to conversation history
