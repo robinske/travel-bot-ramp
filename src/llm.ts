@@ -47,10 +47,11 @@ export class LLMService {
     const twilioNumber = direction.includes('outbound') ? from : to;
     console.log('☎️ twilioNumber:', twilioNumber);
 
-    // Store the Twilio number in templateData for tools to use
+    // Store call context in templateData for tools to use
     if (this.templateData) {
       this.templateData.toolData = this.templateData.toolData || {};
       this.templateData.toolData.twilioNumber = twilioNumber;
+      this.templateData.toolData.customerNumber = callerPhoneNumber;
     }
 
     this.addMessage({
@@ -305,6 +306,27 @@ export class LLMService {
                 return;
               }
 
+              // Handle switch to SMS - change conversation mode and acknowledge
+              if (currentToolName === 'switchToSMS') {
+                // Switch the conversation mode from voice to SMS
+                this.isVoiceCall = false;
+
+                // Add acknowledgment for voice call (to end the call)
+                this.addMessage({
+                  role: 'system',
+                  content: `Tool call switchToSMS succeeded. The text message was sent successfully. IMMEDIATELY respond to the user with: "Perfect! I just sent you a text message. You can respond there and we'll continue via text." Then end the call.`,
+                });
+
+                // Add system message for SMS mode (for when conversation continues via text)
+                this.addMessage({
+                  role: 'system',
+                  content: `IMPORTANT: The conversation has switched to SMS. You are now in an SMS CONVERSATION. When the instructions mention "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow the SMS CONVERSATIONS instructions. Do NOT ask permission to text (you're already texting). Do NOT verify emails phonetically (use normal text format). You can use emojis and formatting appropriate for text messages.`,
+                });
+
+                // Emit event to indicate conversation should switch to SMS
+                this.emit('switchToSMS', result.data);
+              }
+
               // Handle language switching
               if (currentToolName === 'switchLanguage') {
                 this.emit('language', result.data);
@@ -321,7 +343,7 @@ export class LLMService {
                   role: 'system',
                   content: `Tool call sendEmail succeeded. The email was sent successfully. IMMEDIATELY respond to the user with an acknowledgment like "Great, I've sent that email. Check your inbox in the next minute or two." Do this NOW in your next response.`,
                 });
-              } else {
+              } else if (currentToolName !== 'switchToSMS') {
                 this.addMessage({
                   role: 'system',
                   content: `Tool call ${currentToolName} succeeded with data: ${JSON.stringify(

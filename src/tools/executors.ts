@@ -1,11 +1,12 @@
 import { execute as sendTextExecute } from './sendText/executor';
 import { execute as sendEmailExecute } from './sendEmail/executor';
 import { execute as switchLanguageExecute } from './switchLanguage/executor';
+import { execute as switchToSMSExecute } from './switchToSMS/executor';
 import { ToolExecutorParams, ToolResult } from '../lib/types';
 
 export async function executeTool(params: ToolExecutorParams): Promise<ToolResult> {
   const { currentToolName, args, toolData, webhookUrl } = params;
-  
+
   try {
     switch (currentToolName) {
       case 'sendText':
@@ -14,6 +15,8 @@ export async function executeTool(params: ToolExecutorParams): Promise<ToolResul
         return await sendEmailExecute(args, toolData);
       case 'switchLanguage':
         return await switchLanguageExecute(args, toolData);
+      case 'switchToSMS':
+        return await switchToSMSExecute(args, toolData);
       default:
         return {
           success: false,

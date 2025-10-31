@@ -8,6 +8,7 @@ This voice agent includes the following tools:
 - Send text messages (SMS)
 - Send email via SendGrid
 - Switch conversation language
+- Switch from voice call to SMS (for audio issues)
 
 ## Architecture
 
