@@ -1,20 +1,17 @@
 import { Router } from 'express';
- import twilio from 'twilio';
- 
- // Local imports
- import { getLocalTemplateData } from '../lib/utils/llm/getTemplateData';
- import { activeConversations } from './conversationRelay';
- import { LLMService } from '../llm';
- import { routeNames } from './routeNames';
- 
- const router = Router();
+import twilio from 'twilio';
+
+// Local imports
+import { getLocalTemplateData } from '../lib/utils/llm/getTemplateData';
+import { activeConversations } from './conversationRelay';
+import { LLMService } from '../llm';
+import { routeNames } from './routeNames';
+
+const router = Router();
 
 router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
   try {
-    const callType =
-      req.body.To.includes('whatsapp:') || req.body.From.includes('whatsapp:')
-        ? 'whatsapp'
-        : 'sms';
+    const callType = 'sms';
 
     const { From: from, Body: body, To: to } = req.body;
 
@@ -26,24 +23,28 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
 
     console.log('Received SMS from ' + from + ': ' + body);
 
+    // Create TwiML response object
+    const twiml = new twilio.twiml.MessagingResponse();
+
     // Check if there's an active conversation for this number
     const conversation = activeConversations.get(from);
 
+    let llm: LLMService;
+
     if (conversation && conversation.llm) {
-      const { llm } = conversation;
+      llm = conversation.llm;
 
       // Add message to conversation history
       llm.addMessage({
         role: 'user',
         content: body,
       });
-
-      // Process with LLM
-      await llm.run();
     } else {
+      console.log('Starting new conversation for ' + from);
+
       // Create new conversation for this number
       const templateData = await getLocalTemplateData();
-      const llm = new LLMService(from, templateData);
+      llm = new LLMService(from, templateData);
 
       // Reset voice call flag for SMS conversations
       llm.isVoiceCall = false;
@@ -60,22 +61,64 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
         content: `The customer's phone number is ${from}. The agent's phone number is ${to}. This is an ${callType} text message conversation. You are communicating via text messages - your responses will be sent as SMS/text. Keep responses concise and text-message appropriate. Try to keep responses under 150 characters when possible. You can use formatting, links, and emojis in text messages.`,
       });
 
-      // Add user's message and start conversation
+      // Add instructions and context (like we do for voice calls)
+      if (templateData?.instructions) {
+        llm.addMessage({
+          role: 'system',
+          content: templateData.instructions,
+        });
+      }
+
+      if (templateData?.context) {
+        llm.addMessage({
+          role: 'system',
+          content: templateData.context,
+        });
+      }
+
+      // Add user's message
       llm.addMessage({
         role: 'user',
         content: body,
       });
+    }
 
+    // Listen for the LLM response and send it as SMS
+    let fullResponse = '';
+    const textHandler = (chunk: string, isFinal: boolean, fullText?: string) => {
+      if (isFinal && fullText) {
+        fullResponse = fullText;
+        console.log('💬 SMS Response ready: ' + fullText);
+      }
+    };
+
+    llm.on('text', textHandler);
+
+    try {
+      // Process with LLM and wait for response
       await llm.run();
+
+      // Send the response back as TwiML
+      if (fullResponse) {
+        console.log('📤 Sending SMS response: ' + fullResponse);
+        twiml.message(fullResponse);
+      } else {
+        console.log('⚠️ No response generated from LLM');
+      }
+    } finally {
+      // Clean up event listener
+      llm.removeAllListeners('text');
     }
 
     // Send TwiML response
-    const twiml = new twilio.twiml.MessagingResponse();
     res.type('text/xml');
     return res.send(twiml.toString());
   } catch (error: any) {
     console.error('SMS error:', error);
-    return res.status(500).send('Error processing message');
+    const twiml = new twilio.twiml.MessagingResponse();
+    twiml.message('Sorry, I encountered an error. Please try again.');
+    res.type('text/xml');
+    return res.send(twiml.toString());
   }
 });
 
