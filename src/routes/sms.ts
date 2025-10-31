@@ -61,6 +61,12 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
         content: `The customer's phone number is ${from}. The agent's phone number is ${to}. This is an ${callType} text message conversation. You are communicating via text messages - your responses will be sent as SMS/text. Keep responses concise and text-message appropriate. Try to keep responses under 150 characters when possible. You can use formatting, links, and emojis in text messages.`,
       });
 
+      // CRITICAL: Tell the LLM which instruction branches to follow
+      llm.addMessage({
+        role: 'system',
+        content: `IMPORTANT: You are in an SMS CONVERSATION. When the instructions mention "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow the SMS CONVERSATIONS instructions. Do NOT ask permission to text (you're already texting). Do NOT verify emails phonetically (use normal text format like jane.smith@gmail.com). You ARE in a text conversation right now.`,
+      });
+
       // Add instructions and context (like we do for voice calls)
       if (templateData?.instructions) {
         llm.addMessage({

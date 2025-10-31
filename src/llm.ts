@@ -76,6 +76,12 @@ export class LLMService {
       content: `The customer's phone number is ${this.customerNumber}.`,
     });
 
+    // CRITICAL: Tell the LLM which instruction branches to follow
+    this.addMessage({
+      role: 'system',
+      content: `IMPORTANT: You are in a VOICE CALL. When the instructions mention "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow the VOICE CALLS instructions. Ask permission before texting. Verify emails phonetically (e.g., "jane dot smith at gmail dot com"). Do NOT use markdown formatting or special characters - your responses are read aloud by text-to-speech.`,
+    });
+
     // Add instructions from local file
     if (this.templateData?.instructions) {
       console.log('📝 Adding instructions to LLM memory:');
