@@ -314,19 +314,19 @@ export class LLMService {
               if (currentToolName === 'sendText') {
                 this.addMessage({
                   role: 'system',
-                  content: `Tool call sendText succeeded. The text message was sent successfully. Now verbally acknowledge this to the user by saying something like "I just sent that to your phone" or similar, then continue the conversation naturally.`,
+                  content: `Tool call sendText succeeded. The text message was sent successfully. IMMEDIATELY respond to the user with an acknowledgment like "Perfect, I just sent that to your phone. You should see it in a moment." Do this NOW in your next response.`,
                 });
               } else if (currentToolName === 'sendEmail') {
                 this.addMessage({
                   role: 'system',
-                  content: `Tool call sendEmail succeeded. The email was sent successfully. Now verbally acknowledge this to the user by saying something like "I've sent that email" or similar, then continue the conversation naturally.`,
+                  content: `Tool call sendEmail succeeded. The email was sent successfully. IMMEDIATELY respond to the user with an acknowledgment like "Great, I've sent that email. Check your inbox in the next minute or two." Do this NOW in your next response.`,
                 });
               } else {
                 this.addMessage({
                   role: 'system',
                   content: `Tool call ${currentToolName} succeeded with data: ${JSON.stringify(
                     result.data
-                  )}`,
+                  )}. Continue the conversation naturally.`,
                 });
               }
             } else {
@@ -341,7 +341,7 @@ export class LLMService {
             currentToolName = '';
             toolCallInProgress = false;
 
-            // Don't add generic "continue" prompt - let the LLM naturally continue based on the tool result
+            // Note: The LLM will continue after the stream ends if no text was generated (see line 385)
           } catch (e) {
             // JSON parsing failed - continue buffering
             continue;
