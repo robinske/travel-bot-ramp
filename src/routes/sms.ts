@@ -116,9 +116,11 @@ When the instructions say "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow O
     // Listen for the LLM response and send it as SMS
     let fullResponse = '';
     let responseCount = 0;
+    let responseCaptured = false;
     const textHandler = (chunk: string, isFinal: boolean, fullText?: string) => {
-      if (isFinal && fullText) {
+      if (isFinal && fullText && !responseCaptured) {
         fullResponse = fullText;
+        responseCaptured = true;
         responseCount++;
         console.log(`💬 SMS Response ${responseCount} ready: ` + fullText);
       }
