@@ -6,6 +6,7 @@ import { getLocalTemplateData } from '../lib/utils/llm/getTemplateData';
 import { activeConversations } from './conversationRelay';
 import { LLMService } from '../llm';
 import { routeNames } from './routeNames';
+import { obfuscatePhone } from '../lib/utils/obfuscate';
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
       return res.status(400).send('Missing required fields');
     }
 
-    console.log('Received SMS from ' + from + ': ' + body);
+    console.log('Received SMS from ' + obfuscatePhone(from) + ': ' + body);
 
     // Create TwiML response object
     const twiml = new twilio.twiml.MessagingResponse();
@@ -40,7 +41,7 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
         content: body,
       });
     } else {
-      console.log('Starting new conversation for ' + from);
+      console.log('Starting new conversation for ' + obfuscatePhone(from));
 
       // Create new conversation for this number
       const templateData = await getLocalTemplateData();

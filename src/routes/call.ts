@@ -3,6 +3,7 @@ import { Router } from 'express';
  import axios from 'axios';
  import { languages } from '../lib/config/languages';
  import { log } from '../lib/utils/logger';
+ import { obfuscatePhone } from '../lib/utils/obfuscate';
 
 const router = Router();
 
@@ -29,10 +30,10 @@ async function handleCallRequest(req: any, res: any) {
   let callerNumber: string;
   if (direction && direction.includes('outbound')) {
     callerNumber = toNumber || '';
-    console.log('Outbound call detected. Using "To" number as caller: ' + callerNumber);
+    console.log('Outbound call detected. Using "To" number as caller: ' + obfuscatePhone(callerNumber));
   } else {
     callerNumber = fromNumber || '';
-    console.log('Inbound call detected. Using "From" number as caller: ' + callerNumber);
+    console.log('Inbound call detected. Using "From" number as caller: ' + obfuscatePhone(callerNumber));
   }
 
   // action endpoint will be executed when action is dispatched to the ConversationRelay websocket

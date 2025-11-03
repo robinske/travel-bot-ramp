@@ -1,5 +1,6 @@
 import { ToolResult, LocalTemplateData } from '../../lib/types';
 import twilio from 'twilio';
+import { obfuscatePhone } from '../../lib/utils/obfuscate';
 
 export type SwitchToSMSParams = {
   reason?: string;
@@ -55,7 +56,7 @@ export async function execute(
 
     console.log('Twilio SMS response:', JSON.stringify(response));
 
-    console.log(`📱 Switched to SMS for ${customerNumber}. Reason: ${reason || 'not specified'}`);
+    console.log(`📱 Switched to SMS for ${obfuscatePhone(customerNumber)}. Reason: ${reason || 'not specified'}`);
 
     return {
       success: true,

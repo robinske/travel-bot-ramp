@@ -86,6 +86,8 @@ app.get('/health', (req, res) => {
 preloadTemplateData()
   .then(() => {
     app.listen(PORT, () => {
+      const model = process.env.OPENAI_MODEL || 'gpt-4.1';
+      console.log('🤖 OpenAI Model:', model);
       log.info({
         label: 'server',
         message: `Server listening on port ${PORT}`,
@@ -96,6 +98,8 @@ preloadTemplateData()
     console.error('Failed to preload template data:', error);
     // Start server anyway with fallback behavior
     app.listen(PORT, () => {
+      const model = process.env.OPENAI_MODEL || 'gpt-4.1';
+      console.log('🤖 OpenAI Model:', model);
       log.info({
         label: 'server',
         message: `Server listening on port ${PORT} (template data preload failed)`,

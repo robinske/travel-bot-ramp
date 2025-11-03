@@ -3,6 +3,7 @@ import WebSocket from 'ws';
 import { LLMService } from '../llm';
 import { getLocalTemplateData } from '../lib/utils/llm/getTemplateData';
 import { log } from '../lib/utils/logger';
+import { obfuscatePhone } from '../lib/utils/obfuscate';
 
 // Store active conversations
 const activeConversations = new Map<string, {
@@ -30,7 +31,7 @@ setInterval(() => {
   let expiredCount = 0;
   activeConversations.forEach((conversation, phoneNumber) => {
     if (conversation.ttl < Date.now()) {
-      console.log('Closing expired conversation for ' + phoneNumber);
+      console.log('Closing expired conversation for ' + obfuscatePhone(phoneNumber));
       conversation.ws?.close();
       activeConversations.delete(phoneNumber);
 
@@ -84,11 +85,11 @@ export const setupConversationRelayRoute = (app: ExpressWs.Application) => {
           if (direction && direction.includes('outbound')) {
             // For outbound calls, the customer is the 'to' number
             phoneNumber = to;
-            console.log('Outbound call detected. Customer number: ' + phoneNumber + ', Twilio number: ' + from);
+            console.log('Outbound call detected. Customer number: ' + obfuscatePhone(phoneNumber) + ', Twilio number: ' + from);
           } else {
             // For inbound calls, the customer is the 'from' number
             phoneNumber = from;
-            console.log('Inbound call detected. Customer number: ' + phoneNumber + ', Twilio number: ' + to);
+            console.log('Inbound call detected. Customer number: ' + obfuscatePhone(phoneNumber) + ', Twilio number: ' + to);
           }
           
           // Get template data and initialize LLM service
@@ -129,7 +130,7 @@ export const setupConversationRelayRoute = (app: ExpressWs.Application) => {
 
           // Start the conversation
           llm.isVoiceCall = true;
-          console.log('Starting conversation for ' + phoneNumber);
+          console.log('Starting conversation for ' + obfuscatePhone(phoneNumber));
           await llm.notifyInitialCallParams();
           await llm.run();
         } else if (data.type === 'message') {
@@ -149,7 +150,7 @@ export const setupConversationRelayRoute = (app: ExpressWs.Application) => {
             console.log('LLM not initialized yet, ignoring interrupt');
             return;
           }
-          console.log('Interrupting conversation for ' + phoneNumber);
+          console.log('Interrupting conversation for ' + obfuscatePhone(phoneNumber));
           // Optionally restart the LLM response
           await llm.run();
         } else if (data.type === 'dtmf') {
@@ -178,7 +179,7 @@ export const setupConversationRelayRoute = (app: ExpressWs.Application) => {
           await llm.run();
         } else if (data.type === 'info') {
           // Handle info messages (heartbeat/status updates from Twilio)
-          console.log('📊 Info message from Twilio for ' + phoneNumber + ':', {
+          console.log('📊 Info message from Twilio for ' + obfuscatePhone(phoneNumber) + ':', {
             timestamp: new Date().toISOString(),
             data: data
           });
@@ -198,7 +199,7 @@ export const setupConversationRelayRoute = (app: ExpressWs.Application) => {
     });
 
     ws.on('close', () => {
-      console.log('WebSocket connection closed for ' + phoneNumber);
+      console.log('WebSocket connection closed for ' + obfuscatePhone(phoneNumber));
       activeConversations.delete(phoneNumber);
       
       const existingActivity = recentActivity.get(phoneNumber);
@@ -208,7 +209,7 @@ export const setupConversationRelayRoute = (app: ExpressWs.Application) => {
     });
 
     ws.on('error', (error) => {
-      console.error('WebSocket error for ' + phoneNumber + ':', error);
+      console.error('WebSocket error for ' + obfuscatePhone(phoneNumber) + ':', error);
       activeConversations.delete(phoneNumber);
     });
   });
