@@ -128,7 +128,12 @@ export class LLMService {
   }
 
   set isVoiceCall(value: boolean) {
+    const previous = this._isVoiceCall;
     this._isVoiceCall = value;
+
+    if (previous !== value) {
+      console.log(`📞 Communication mode ${previous !== undefined ? 'switched to' : 'set to'}: ${value ? '🎙️ VOICE CALL' : '💬 SMS/TEXT'}`);
+    }
   }
 
   // Helper to get communication type for tools
