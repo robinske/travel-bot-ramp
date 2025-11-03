@@ -77,12 +77,6 @@ export class LLMService {
       content: `The customer's phone number is ${this.customerNumber}.`,
     });
 
-    // CRITICAL: Tell the LLM which instruction branches to follow
-    this.addMessage({
-      role: 'system',
-      content: `IMPORTANT: You are in a VOICE CALL. When the instructions mention "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow the VOICE CALLS instructions. Ask permission before texting. Verify emails phonetically (e.g., "jane dot smith at gmail dot com"). Do NOT use markdown formatting or special characters - your responses are read aloud by text-to-speech.`,
-    });
-
     // Add instructions from local file
     if (this.templateData?.instructions) {
       console.log('📝 Adding instructions to LLM memory:');
@@ -110,6 +104,22 @@ export class LLMService {
     } else {
       console.log('❌ No context found in templateData');
     }
+
+    // CRITICAL: Tell the LLM which instruction branches to follow (AFTER instructions so it's fresh)
+    this.addMessage({
+      role: 'system',
+      content: `🎙️ CRITICAL REMINDER - YOU ARE IN A VOICE CALL RIGHT NOW 🎙️
+
+This is a phone call. Your responses are spoken aloud by text-to-speech.
+
+When the instructions say "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow ONLY the VOICE CALLS branch. Ignore all SMS CONVERSATIONS instructions.
+
+Key reminders:
+- ASK permission before sending texts: "Would you like me to text you the details?"
+- Verify emails PHONETICALLY: "jane dot smith at gmail dot com"
+- NO markdown, special characters, or formatting (it's read aloud!)
+- Keep it conversational for voice`,
+    });
 
     console.log('🧠 LLM memory summary:');
     console.log('- Total messages in memory:', this.store.msgs.length);

@@ -61,12 +61,6 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
         content: `The customer's phone number is ${from}. The agent's phone number is ${to}. This is an ${callType} text message conversation. You are communicating via text messages - your responses will be sent as SMS/text. Keep responses concise and text-message appropriate. Try to keep responses under 150 characters when possible. You can use formatting, links, and emojis in text messages.`,
       });
 
-      // CRITICAL: Tell the LLM which instruction branches to follow
-      llm.addMessage({
-        role: 'system',
-        content: `IMPORTANT: You are in an SMS CONVERSATION. When the instructions mention "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow the SMS CONVERSATIONS instructions. Do NOT ask permission to text (you're already texting). Do NOT verify emails phonetically (use normal text format like jane.smith@gmail.com). You ARE in a text conversation right now.`,
-      });
-
       // Add instructions and context (like we do for voice calls)
       if (templateData?.instructions) {
         llm.addMessage({
@@ -81,6 +75,26 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
           content: templateData.context,
         });
       }
+
+      // CRITICAL: Tell the LLM which instruction branches to follow (AFTER instructions so it's fresh)
+      llm.addMessage({
+        role: 'system',
+        content: `🚨 CRITICAL OVERRIDE - YOU ARE IN AN SMS/TEXT CONVERSATION RIGHT NOW 🚨
+
+You are texting with the customer. This entire conversation is happening via SMS text messages.
+
+ABSOLUTELY DO NOT:
+- Ask "Would you like me to text you?" (YOU ARE ALREADY TEXTING!)
+- Ask permission to send a text (YOU ARE ALREADY IN A TEXT CONVERSATION!)
+- Say "I can text you the details" (THE ENTIRE CONVERSATION IS ALREADY TEXT!)
+
+INSTEAD:
+- Just share information naturally in your responses
+- You're already texting, so just include details directly
+- For example: "Here's your itinerary: [details]" NOT "Would you like me to text you the itinerary?"
+
+When the instructions say "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow ONLY the SMS CONVERSATIONS branch. Ignore all VOICE CALL instructions.`,
+      });
 
       // Add user's message
       llm.addMessage({
