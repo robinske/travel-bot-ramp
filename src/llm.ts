@@ -13,6 +13,7 @@ import { sendToWebhook } from './lib/utils/webhook';
 import { tools } from './tools/manifest';
 import { executeTool } from './tools/executors';
 import { getLocalTemplateData } from './lib/utils/llm/getTemplateData';
+import { obfuscatePhone } from './lib/utils/obfuscate';
 
 // ========================================
 // LLM Configuration
@@ -162,7 +163,7 @@ Key reminders:
     if (this.store.msgs.length > 300) {
       log.error({
         label: 'llm',
-        phone: this.customerNumber,
+        phone: obfuscatePhone(this.customerNumber),
         message: `Message queue exceeded 300 messages (${this.store.msgs.length}). Ending call for safety.`,
       });
       this.emit('handoff', {
@@ -182,7 +183,7 @@ Key reminders:
       this.currentRequest.abort();
       log.info({
         label: 'llm',
-        phone: this.customerNumber,
+        phone: obfuscatePhone(this.customerNumber),
         message: 'Cancelled previous request due to new prompt',
       });
     }
@@ -219,7 +220,7 @@ Key reminders:
         if (this.currentRequest && this.currentRequest.signal.aborted) {
           log.info({
             label: 'llm',
-            phone: this.customerNumber,
+            phone: obfuscatePhone(this.customerNumber),
             message: 'Request was cancelled, stopping processing',
           });
           return;
@@ -242,10 +243,10 @@ Key reminders:
           // Try to parse the buffered arguments
           try {
             const args = JSON.parse(toolCallBuffer);
-            
+
             // Log tool call
             log.tool_call({
-              phone: this.customerNumber,
+              phone: obfuscatePhone(this.customerNumber),
               message: currentToolName,
               data: {
                 toolName: currentToolName,
@@ -265,7 +266,7 @@ Key reminders:
             ).catch((err) =>
               log.error({
                 label: 'webhook',
-                phone: this.customerNumber,
+                phone: obfuscatePhone(this.customerNumber),
                 message: 'Failed to send tool execution',
                 data: err,
               })
@@ -280,7 +281,7 @@ Key reminders:
 
             // Log tool result
             log.tool_result({
-              phone: this.customerNumber,
+              phone: obfuscatePhone(this.customerNumber),
               message: `${currentToolName} - ${
                 result.success ? 'success' : 'failed'
               }`,
@@ -307,7 +308,7 @@ Key reminders:
             ).catch((err) =>
               log.error({
                 label: 'webhook',
-                phone: this.customerNumber,
+                phone: obfuscatePhone(this.customerNumber),
                 message: 'Failed to send tool result',
                 data: err,
               })
@@ -401,7 +402,7 @@ Key reminders:
             } else {
               log.info({
                 label: 'llm',
-                phone: this.customerNumber,
+                phone: obfuscatePhone(this.customerNumber),
                 message: `Ignoring text chunk from cancelled response: ${responseId}`,
               });
             }
@@ -443,7 +444,7 @@ Key reminders:
       ) {
         log.info({
           label: 'llm',
-          phone: this.customerNumber,
+          phone: obfuscatePhone(this.customerNumber),
           message: 'Request was aborted/cancelled',
         });
         this.currentRequest = null;
@@ -453,7 +454,7 @@ Key reminders:
       // Only log and handle as conversation error if it's not an abort
       log.error({
         label: 'llm',
-        phone: this.customerNumber,
+        phone: obfuscatePhone(this.customerNumber),
         message: 'Conversation error',
         data: {
           error: error.message || error.toString(),
