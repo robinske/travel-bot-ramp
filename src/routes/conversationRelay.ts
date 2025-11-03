@@ -72,7 +72,7 @@ export const setupConversationRelayRoute = (app: ExpressWs.Application) => {
         
         log.info({
           label: 'conversation',
-          phone: phoneNumber,
+          phone: obfuscatePhone(phoneNumber),
           message: 'Received message',
           data: data.type
         });

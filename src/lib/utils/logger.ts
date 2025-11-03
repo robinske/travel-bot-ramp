@@ -1,5 +1,3 @@
-import winston from 'winston';
-
 const NS_PAD = 32;
 
 const CC = {
@@ -22,28 +20,6 @@ const title = (label?: string, color = CC.clear, phoneNumber?: string) => {
   const phonePrefix = phoneNumber ? `[${phoneNumber}] ` : '';
   const safeLabel = label || 'unknown';
   return color + phonePrefix + safeLabel.padEnd(NS_PAD) + CC.clear;
-};
-
-const stringify = (arg: any): string => {
-  if (typeof arg === 'string') return arg;
-  if (arg instanceof Error) return arg.message;
-  try {
-    const cache = new WeakSet();
-    return JSON.stringify(arg, (k, value) => {
-      if (typeof value === 'object' && value !== null) {
-        if (cache.has(value)) return '[Circular]';
-        cache.add(value);
-      }
-      return value;
-    }, 2);
-  } catch (err) {
-    try {
-      const util = require('util');
-      return util.inspect(arg, { depth: 2, colors: false });
-    } catch {
-      return String(arg);
-    }
-  }
 };
 
 interface LogData {

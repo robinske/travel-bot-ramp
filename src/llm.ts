@@ -244,13 +244,17 @@ Key reminders:
           try {
             const args = JSON.parse(toolCallBuffer);
 
-            // Log tool call
+            // Log tool call with obfuscated "to" field if present
+            const logArgs = { ...args };
+            if (logArgs.to) {
+              logArgs.to = obfuscatePhone(logArgs.to);
+            }
             log.tool_call({
               phone: obfuscatePhone(this.customerNumber),
               message: currentToolName,
               data: {
                 toolName: currentToolName,
-                args: JSON.parse(toolCallBuffer),
+                args: logArgs,
               },
             });
 
