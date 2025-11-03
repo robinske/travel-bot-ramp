@@ -354,14 +354,20 @@ Key reminders:
 
               // Add success message with specific acknowledgment prompt
               if (currentToolName === 'sendText') {
+                const ackMessage = this.isVoiceCall
+                  ? `Tool call sendText succeeded. The text message was sent successfully. IMMEDIATELY respond to the user with an acknowledgment like "Perfect, I just sent that to your phone. You should see it in a moment." Do this NOW in your next response.`
+                  : `Tool call sendText succeeded. The text message was sent successfully. IMMEDIATELY respond to the user with an acknowledgment like "Perfect, I just sent that text. You should see it in a moment." Do this NOW in your next response.`;
                 this.addMessage({
                   role: 'system',
-                  content: `Tool call sendText succeeded. The text message was sent successfully. IMMEDIATELY respond to the user with an acknowledgment like "Perfect, I just sent that to your phone. You should see it in a moment." Do this NOW in your next response.`,
+                  content: ackMessage,
                 });
               } else if (currentToolName === 'sendEmail') {
+                const ackMessage = this.isVoiceCall
+                  ? `Tool call sendEmail succeeded. The email was sent successfully. IMMEDIATELY respond to the user with an acknowledgment like "Great, I've sent that email. Check your inbox in the next minute or two." Do this NOW in your next response.`
+                  : `Tool call sendEmail succeeded. The email was sent successfully. IMMEDIATELY respond with a confirmation like "✓ Email sent! Check your inbox in the next minute or two." Do this NOW in your next response.`;
                 this.addMessage({
                   role: 'system',
-                  content: `Tool call sendEmail succeeded. The email was sent successfully. IMMEDIATELY respond to the user with an acknowledgment like "Great, I've sent that email. Check your inbox in the next minute or two." Do this NOW in your next response.`,
+                  content: ackMessage,
                 });
               } else if (currentToolName !== 'switchToSMS') {
                 this.addMessage({
