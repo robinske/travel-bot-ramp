@@ -159,6 +159,17 @@ Key reminders:
   }) => {
     this.store.msgs.push(msg);
 
+    // Inject stay-on-topic reminder after every 4 user messages
+    if (msg.role === 'user') {
+      const userMessageCount = this.store.msgs.filter(m => m.role === 'user').length;
+      if (userMessageCount > 0 && userMessageCount % 4 === 0) {
+        this.store.msgs.push({
+          role: 'system',
+          content: '🎯 REMINDER: Stay focused on Hawaii trip planning ONLY. If the user asks off-topic questions, politely redirect back to the itinerary. Your only job is Hawaii vacation planning.',
+        });
+      }
+    }
+
     // Kill switch: if message queue exceeds 300, end the call
     if (this.store.msgs.length > 300) {
       log.error({
