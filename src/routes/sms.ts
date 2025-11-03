@@ -115,10 +115,12 @@ When the instructions say "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow O
 
     // Listen for the LLM response and send it as SMS
     let fullResponse = '';
+    let responseCount = 0;
     const textHandler = (chunk: string, isFinal: boolean, fullText?: string) => {
       if (isFinal && fullText) {
         fullResponse = fullText;
-        console.log('💬 SMS Response ready: ' + fullText);
+        responseCount++;
+        console.log(`💬 SMS Response ${responseCount} ready: ` + fullText);
       }
     };
 
@@ -127,6 +129,29 @@ When the instructions say "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow O
     try {
       // Process with LLM and wait for response
       await llm.run();
+
+      // If no response yet (tool was executed), wait for continuation response
+      // This handles cases like sendEmail where the tool executes and then
+      // llm.run(false) is called to generate a confirmation message
+      if (!fullResponse) {
+        console.log('⏳ No immediate response, waiting for tool continuation...');
+        await new Promise((resolve) => {
+          const timeout = setTimeout(() => {
+            console.log('⏰ Timeout waiting for continuation response');
+            resolve(null);
+          }, 10000); // 10 second timeout
+
+          const checkResponse = () => {
+            if (fullResponse) {
+              clearTimeout(timeout);
+              resolve(fullResponse);
+            } else {
+              setTimeout(checkResponse, 100);
+            }
+          };
+          checkResponse();
+        });
+      }
 
       // Send the response back as TwiML
       if (fullResponse) {
