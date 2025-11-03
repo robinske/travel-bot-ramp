@@ -58,7 +58,7 @@ router.post(`/${routeNames.sms}`, async (req: any, res: any) => {
 
       llm.addMessage({
         role: 'system',
-        content: `The customer's phone number is ${from}. The agent's phone number is ${to}. This is an ${callType} text message conversation. You are communicating via text messages - your responses will be sent as SMS/text. Keep responses concise and text-message appropriate. Try to keep responses under 150 characters when possible. You can use formatting, links, and emojis in text messages.`,
+        content: `The customer's phone number is ${from}. The agent's phone number is ${to}. This is an ${callType} text message conversation. You are communicating via text messages - your responses will be sent as SMS/text. Keep responses concise and text-message appropriate. Try to keep responses under 150 characters when possible. You can use numbers (12, 3pm), emojis (🌴), and formatting that's natural for text messages.`,
       });
 
       // Add instructions and context (like we do for voice calls)
@@ -102,7 +102,7 @@ When the instructions say "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow O
       // Add a system message to trigger the guided greeting (like voice calls do)
       llm.addMessage({
         role: 'system',
-        content: `This is the start of a new SMS conversation. The user just sent: "${body}". Respond with the same guided demo experience as a voice call. Use the greeting from Step 1 in the instructions, but adapt it for text (you can use emojis 🌺). Example: "Aloha! 🌺 I see you're heading to Hawaii from New York, June 12-18. Would you like me to help you put together your first few days?" Start the conversation proactively - don't wait for them to ask questions.`,
+        content: `This is the start of a new SMS conversation. The user just sent: "${body}". Respond with the same guided demo experience as a voice call. Use the greeting from Step 1 in the instructions, but adapt it for text (you can use emojis). Example: "Aloha! 🌺 I see you're heading to Hawaii from New York, June 12-18. Would you like me to help you put together your first few days?" Start the conversation proactively - don't wait for them to ask questions.`,
       });
 
       // Add user's message
