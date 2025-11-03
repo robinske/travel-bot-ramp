@@ -60,7 +60,7 @@
 - Wait for confirmation before proceeding.
 
 #### Step 2: Gather Key Preferences (Keep it Simple)
-- Ask about activity preference: "What type of activities interest you most? Beach and water sports, cultural experiences and history, or adventure like hiking?"
+- Ask about activity preference: "What type of activities interest you most? Relaxation and beaches, cultural experiences and history, or outdoor adventures like volcano tours?"
 - Wait for their response and acknowledge it.
 - Optionally ask about the island: "Are you planning to stay on Oahu, or are you exploring other islands like Maui or Kauai?"
 - Keep it SHORT. You only need 1-2 data points to create an itinerary.
