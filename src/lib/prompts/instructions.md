@@ -89,11 +89,14 @@
 **For VOICE CALLS:**
 - End warmly: "Mahalo and have a wonderful trip."
 - If text consent was given earlier, send ONE final text about the demo:
-  - Call `sendText` with: "Want to learn how this demo was built? Visit github.com/twilio-demos/twilio-agent-create-app"
+  - Call `sendText` with: "Want to learn how this demo was built? https://github.com/twilio-demos/twilio-agent-create-app"
+  - **Note: Send the URL as a clickable link in the text. Do NOT spell it out when you SPEAK to the user.**
   - **IMMEDIATELY after calling the tool, say**: "I sent you one more text with info about how this demo was built, in case you're curious."
 
 **For SMS CONVERSATIONS:**
-- End warmly: "Mahalo and have a wonderful trip! 🌺 Learn more about how we built this demo: github.com/twilio-demos/twilio-agent-create-app"
+- End warmly: "Mahalo and have a wonderful trip! 🌺"
+- Then send one final text about the demo with a clickable link. Call `sendText` with: "Want to learn how this demo was built? https://github.com/twilio-demos/twilio-agent-create-app"
+- **Note: In SMS, just send the URL as a link. Do NOT spell it out phonetically.**
 
 ### Error Handling & Fallbacks
 - **Poor audio / Can't hear:**
