@@ -99,6 +99,12 @@ INSTEAD:
 When the instructions say "For VOICE CALLS" vs "For SMS CONVERSATIONS", follow ONLY the SMS CONVERSATIONS branch. Ignore all VOICE CALL instructions.`,
       });
 
+      // Add a system message to trigger the guided greeting (like voice calls do)
+      llm.addMessage({
+        role: 'system',
+        content: `This is the start of a new SMS conversation. The user just sent: "${body}". Respond with the same guided demo experience as a voice call. Use the greeting from Step 1 in the instructions, but adapt it for text (you can use emojis 🌺). Example: "Aloha! 🌺 I see you're heading to Hawaii from New York, June 12-18. Would you like me to help you put together your first few days?" Start the conversation proactively - don't wait for them to ask questions.`,
+      });
+
       // Add user's message
       llm.addMessage({
         role: 'user',
